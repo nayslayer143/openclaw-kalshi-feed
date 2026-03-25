@@ -93,8 +93,9 @@ def _req(client, method, url, **kw):
     log.error("Retries exhausted for %s", url); return None
 
 def fetch_markets(client, base, headers, category=None):
-    markets, cursor = [], None
-    while True:
+    markets, cursor, page = [], None, 0
+    max_pages = config.MAX_PAGES
+    while page < max_pages:
         params = {"limit": config.PAGE_SIZE, "status": "open"}
         if cursor: params["cursor"] = cursor
         r = _req(client, "get", f"{base}/markets", params=params, headers=headers)
@@ -103,8 +104,9 @@ def fetch_markets(client, base, headers, category=None):
         if not batch: break
         markets.extend(batch)
         cursor = data.get("cursor")
+        page += 1
         if not cursor: break
-        log.info("Fetched %d markets so far...", len(markets))
+        log.info("Fetched %d markets so far... (page %d/%d)", len(markets), page, max_pages)
     if category:
         kws = config.CATEGORIES.get(category, [])
         if kws:

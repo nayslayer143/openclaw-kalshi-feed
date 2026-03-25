@@ -46,3 +46,4 @@ LOG_DIR = Path(__file__).parent / "logs"
 
 # Pagination
 PAGE_SIZE = 100  # Kalshi API max cursor page size
+MAX_PAGES = 20   # Cap at 2,000 markets per crawl (Kalshi has 10K+ total)
